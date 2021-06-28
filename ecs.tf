@@ -3,6 +3,7 @@ resource "aws_ecs_cluster" "cluster" {
 }
 
 resource "aws_ecs_task_definition" "task" {
+  family = "task-definition"
   container_definitions = jsonencode([
     {
       "name": "my-first-task",
