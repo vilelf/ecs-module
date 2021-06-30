@@ -7,7 +7,7 @@ resource "aws_ecs_task_definition" "task" {
   container_definitions = jsonencode([
     {
       "name": "my-first-task",
-      "image": "${aws_ecr_repository.ecr_repo.repository_url}",
+      "image": aws_ecr_repository.ecr_repo.repository_url
       "essential": true,
       "portMappings": [
         {
@@ -23,12 +23,12 @@ resource "aws_ecs_task_definition" "task" {
   network_mode             = "awsvpc" 
   memory                   = 512
   cpu                      = 256
-  execution_role_arn       = "${aws_iam_role.ecsTaskExecutionRole.arn}"
+  execution_role_arn       = aws_iam_role.ecsTaskExecutionRole.arn
 }
 
 resource "aws_iam_role" "ecsTaskExecutionRole" {
   name               = format("ecsTaskExecutionRole-%s", var.ecs_cluster_name)
-  assume_role_policy = "${data.aws_iam_policy_document.assume_role_policy.json}"
+  assume_role_policy = data.aws_iam_policy_document.assume_role_policy.json
 }
 
 data "aws_iam_policy_document" "assume_role_policy" {
@@ -43,7 +43,7 @@ data "aws_iam_policy_document" "assume_role_policy" {
 }
 
 resource "aws_iam_role_policy_attachment" "ecsTaskExecutionRole_policy" {
-  role       = "${aws_iam_role.ecsTaskExecutionRole.name}"
+  role       = aws_iam_role.ecsTaskExecutionRole.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
@@ -54,6 +54,9 @@ resource "aws_ecs_service" "ecs_service" {
   launch_type           = "FARGATE"
   desired_count         = 3
   wait_for_steady_state = true
+  depends_on = [
+    aws_ecs_cluster.cluster
+  ]
 
   network_configuration {
     subnets = [
