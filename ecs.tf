@@ -48,11 +48,12 @@ resource "aws_iam_role_policy_attachment" "ecsTaskExecutionRole_policy" {
 }
 
 resource "aws_ecs_service" "ecs_service" {
-  name              = format("%s-service", var.ecs_cluster_name)
-  cluster           = aws_ecs_cluster.cluster.id
-  task_definition   = aws_ecs_task_definition.task.arn
-  launch_type       = "FARGATE"
-  desired_count     = 3
+  name                  = format("%s-service", var.ecs_cluster_name)
+  cluster               = aws_ecs_cluster.cluster.id
+  task_definition       = aws_ecs_task_definition.task.arn
+  launch_type           = "FARGATE"
+  desired_count         = 3
+  wait_for_steady_state = true
 
   network_configuration {
     subnets = [
