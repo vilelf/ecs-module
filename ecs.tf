@@ -1,9 +1,5 @@
 resource "aws_ecs_cluster" "cluster" {
   name = var.ecs_cluster_name
-
-  timeouts {
-    create = "20m"
-  }
 }
 
 resource "aws_ecs_task_definition" "task" {
