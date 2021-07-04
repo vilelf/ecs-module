@@ -26,27 +26,6 @@ resource "aws_ecs_task_definition" "task" {
   execution_role_arn       = aws_iam_role.ecsTaskExecutionRole.arn
 }
 
-resource "aws_iam_role" "ecsTaskExecutionRole" {
-  name               = format("ecsTaskExecutionRole-%s", var.ecs_cluster_name)
-  assume_role_policy = data.aws_iam_policy_document.assume_role_policy.json
-}
-
-data "aws_iam_policy_document" "assume_role_policy" {
-  statement {
-    actions = ["sts:AssumeRole"]
-
-    principals {
-      type        = "Service"
-      identifiers = ["ecs-tasks.amazonaws.com"]
-    }
-  }
-}
-
-resource "aws_iam_role_policy_attachment" "ecsTaskExecutionRole_policy" {
-  role       = aws_iam_role.ecsTaskExecutionRole.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
-}
-
 resource "aws_ecs_service" "ecs_service" {
   name                  = format("%s-service", var.ecs_cluster_name)
   cluster               = aws_ecs_cluster.cluster.id
@@ -58,6 +37,12 @@ resource "aws_ecs_service" "ecs_service" {
     aws_ecs_cluster.cluster
   ]
 
+  load_balancer {
+    target_group_arn = aws_lb_target_group.target_group.arn
+    container_name = aws_ecs_task_definition.task.family
+    container_port = 3000
+  }
+
   network_configuration {
     subnets = [
       aws_default_subnet.default_subnet_a.id, 
@@ -65,5 +50,21 @@ resource "aws_ecs_service" "ecs_service" {
       aws_default_subnet.default_subnet_c.id
     ]
     assign_public_ip = true
+  }
+}
+
+resource "aws_security_group" "service_sg" {
+  ingress {
+    from_port       = 0
+    to_port         = 0
+    protocol        = "-1"
+    security_groups = [aws_security_group.load_balancer_sg.id]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 }
