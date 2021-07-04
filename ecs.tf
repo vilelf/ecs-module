@@ -34,7 +34,8 @@ resource "aws_ecs_service" "ecs_service" {
   desired_count         = 3
   wait_for_steady_state = true
   depends_on = [
-    aws_ecs_cluster.cluster
+    aws_ecs_cluster.cluster,
+    aws_ecs_task_definition.task
   ]
 
   load_balancer {
