@@ -6,7 +6,7 @@ resource "aws_ecs_task_definition" "task" {
   family = "task-definition"
   container_definitions = jsonencode([
     {
-      "name": "my-first-task",
+      "name": "task-definition",
       "image": aws_ecr_repository.ecr_repo.repository_url
       "essential": true,
       "portMappings": [
