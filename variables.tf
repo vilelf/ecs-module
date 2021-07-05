@@ -21,3 +21,9 @@ variable "subdomain_name" {
   default     = false
   description = "Subdominio"
 }
+
+variable "zone_id" {
+  type        = string
+  default     = false
+  description = "Zona onde vai estar nosso domínio"
+}
