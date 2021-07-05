@@ -15,3 +15,9 @@ variable "aws_region" {
   default     = "us-east-1"
   description = "Região na AWS onde ficará nossa infra"
 }
+
+variable "subdomain_name" {
+  type        = string
+  default     = false
+  description = "Subdominio"
+}
