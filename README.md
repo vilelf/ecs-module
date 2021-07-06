@@ -1,4 +1,4 @@
-# tf-app-django
+# ecs-module
 
 ```terraform
 #terrafile.tf
@@ -18,7 +18,6 @@ terraform {
 module "ecr" {
   source  = "git@github.com:vilelf/tf-app-django?ref=main"
 
-  ecr_repo_name = "minimal_django"
   ecs_cluster_name = "minimal_django"
   aws_region = "us-east-1"
 }
